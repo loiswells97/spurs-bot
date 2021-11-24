@@ -13,3 +13,18 @@ competition=next_match.find_all("h3")[1].string
 
 print(date_string)
 print(competition)
+
+time=next_match.find("span", class_="sp-c-fixture__number--time").string
+teams=next_match.find_all("span", class_="qa-full-team-name")
+
+print(time)
+
+if teams[0].string=="Tottenham Hotspur":
+    is_home=True
+    opposition=teams[1].string
+else:
+    is_home=False
+    opposition=teams[0].string
+
+print(opposition)
+print(is_home)
