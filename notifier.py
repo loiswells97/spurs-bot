@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
 import requests
 import schedule
 import time
@@ -20,7 +21,9 @@ def generate_match_alert():
 
     print(is_today)
 
-    if is_today:
+    today=datetime.today()
+
+    if is_today and today.weekday() != 6:
         next_match=soup.find("div", class_="qa-match-block")
 
         competition=next_match.find_all("h3")[0].string
