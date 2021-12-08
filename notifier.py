@@ -45,7 +45,7 @@ def generate_match_alert():
             to = "+447854324768"
         )
 
-schedule.every().day.at("13:08").do(generate_match_alert)
+schedule.every().day.at("10:00").do(generate_match_alert)
 
 while True:
     schedule.run_pending()
