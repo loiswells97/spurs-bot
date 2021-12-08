@@ -4,39 +4,47 @@ import re
 import requests
 import schedule
 import time
+from twilio.rest import Client
+
+import config
+
+client = Client(config.account_sid, config.auth_token)
 
 def generate_match_alert():
 
-    request=requests.get("https://www.bbc.co.uk/sport/football/teams/tottenham-hotspur/scores-fixtures")
+    request=requests.get(f"https://www.bbc.co.uk/sport/football/teams/tottenham-hotspur/scores-fixtures")
     soup=BeautifulSoup(request.content, "html.parser")
 
-    next_match=soup.find("div", class_="qa-match-block")
+    selected_date=soup.find("li", class_="sp-c-date-picker-timeline__item--selected")
+    print(selected_date)
 
-    date_string=next_match.find_all("h3")[0].string
-    competition=next_match.find_all("h3")[1].string
+    is_today=(selected_date.find("span", class_="gel-long-primer-bold").string == "TODAY")
 
-    time_string=next_match.find("span", class_="sp-c-fixture__number--time").string
-    teams=next_match.find_all("span", class_="qa-full-team-name")
-    today=datetime.now()
-
-    modified_date_string=re.sub(r'(\d)(st|nd|rd|th)', r'\1', date_string)
-
-    match_datetime=datetime.strptime(modified_date_string+" "+str(today.year)+ " "+time_string, "%A %d %B %Y %H:%M")
-
-    if teams[0].string=="Tottenham Hotspur":
-        home_or_away="at home"
-        opposition=teams[1].string
-    else:
-        home_or_away="away"
-        opposition=teams[0].string
-
-    is_today=(match_datetime.date()==today.date())
+    print(is_today)
 
     if is_today:
-        message=f"Tottenham are playing {opposition} {home_or_away} today at {time_string}."
-        print(message)
+        next_match=soup.find("div", class_="qa-match-block")
 
-schedule.every().day.at("10:00").do(generate_match_alert)
+        competition=next_match.find_all("h3")[0].string
+
+        time_string=next_match.find("span", class_="sp-c-fixture__number--time").string
+        teams=next_match.find_all("span", class_="qa-full-team-name")
+
+        if teams[0].string=="Tottenham Hotspur":
+            home_or_away="at home"
+            opposition=teams[1].string
+        else:
+            home_or_away="away"
+            opposition=teams[0].string
+
+        message=f"Tottenham are playing {opposition} {home_or_away} today at {time_string} in the {competition}."
+        text = client.messages.create(
+            body = message,
+            from_ = "+18506053624",
+            to = "+447854324768"
+        )
+
+schedule.every().day.at("12:18").do(generate_match_alert)
 
 while True:
     schedule.run_pending()
