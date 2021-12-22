@@ -51,15 +51,32 @@ def generate_team_match_alert(team):
     else:
         print(f"{string.capwords(team)} are not playing today.")
 
-# def is_playing_today(team):
-#     team=team.lower()
-#     team_slug=team.replace(" ", "-")
-#
-#     request=requests.get(f"https://www.bbc.co.uk/sport/football/teams/{team_slug}/scores-fixtures")
-#     soup=BeautifulSoup(request.content, "html.parser")
-#
-#     selected_date=soup.find("li", class_="sp-c-date-picker-timeline__item--selected")
-#
-#     is_today=(selected_date.find("span", class_="gel-long-primer-bold").string == "TODAY")
-#
-#     return is_today
+def is_playing_today(team):
+    team=team.lower()
+    team_slug=team.replace(" ", "-")
+
+    request=requests.get(f"https://www.bbc.co.uk/sport/football/teams/{team_slug}/scores-fixtures")
+    soup=BeautifulSoup(request.content, "html.parser")
+
+    selected_date=soup.find("li", class_="sp-c-date-picker-timeline__item--selected")
+
+    is_today=(selected_date.find("span", class_="gel-long-primer-bold").string == "TODAY")
+
+    return is_today
+
+def get_kick_off_time(team):
+    team=team.lower()
+    team_slug=team.replace(" ", "-")
+
+    request=requests.get(f"https://www.bbc.co.uk/sport/football/teams/{team_slug}/scores-fixtures")
+    soup=BeautifulSoup(request.content, "html.parser")
+
+    selected_date=soup.find("li", class_="sp-c-date-picker-timeline__item--selected")
+
+    is_today=(selected_date.find("span", class_="gel-long-primer-bold").string == "TODAY")
+
+    if not is_today:
+        return
+    else
+        time_string=next_match.find("span", class_="sp-c-fixture__number--time").string
+        return time_string
