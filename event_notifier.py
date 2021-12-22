@@ -35,19 +35,23 @@ client = Client(config.account_sid, config.auth_token)
 #     return new_state
 
 def generate_event_alerts(team):
-    latest_match_state=get_match_data(team)
+    # latest_match_state=get_match_data(team)
+    latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": []}, "away": {"team": "West Ham United", "score": 0, "goals": []}, "status": "In Progress"}
+
+    home_team=latest_match_state["home"]["team"]
+    home_score=latest_match_state["home"]["score"]
+    away_team=latest_match_state["away"]["team"]
+    away_score=latest_match_state["away"]["score"]
     while latest_match_state["status"]!="FT":
         current_match_state=get_match_data(team)
-        home_team=current_match_state["home"]["team"]
         home_score=current_match_state["home"]["score"]
-        away_team=current_match_state["away"]["team"]
         away_score=current_match_state["away"]["score"]
 
         # Home team has scored
         if current_match_state["home"]["goals"]!=latest_match_state["home"]["goals"]:
             for goal in current_match_state["home"]["goals"]:
                 if goal not in latest_match_state["home"]["goals"]:
-                    message=f"{goal["scorer"].upper()} HAS SCORED FOR {home_team.upper()} ({goal["time"]})! The score is now {home_team} {home_score}-{away_score} {away_team}."
+                    message=f"{goal['scorer'].upper()} HAS SCORED FOR {home_team.upper()} ({goal['time']})! The score is now {home_team} {home_score}-{away_score} {away_team}."
                     text = client.messages.create(
                         body = message,
                         from_ = config.twilio_from_number,
@@ -59,7 +63,7 @@ def generate_event_alerts(team):
         if current_match_state["away"]["goals"]!=latest_match_state["away"]["goals"]:
             for goal in current_match_state["away"]["goals"]:
                 if goal not in latest_match_state["away"]["goals"]:
-                    message=f"{goal["scorer"].upper()} HAS SCORED FOR {away_team.upper()} ({goal["time"]})! The score is now {home_team} {home_score}-{away_score} {away_team}."
+                    message=f"{goal['scorer'].upper()} HAS SCORED FOR {away_team.upper()} ({goal['time']})! The score is now {home_team} {home_score}-{away_score} {away_team}."
                     text = client.messages.create(
                         body = message,
                         from_ = config.twilio_from_number,
@@ -67,6 +71,7 @@ def generate_event_alerts(team):
                     )
         latest_match_state=current_match_state
         time.sleep(60)
+
     message=f"The full time score is {home_team} {home_score}-{away_score} {away_team}."
     text = client.messages.create(
         body = message,
@@ -87,8 +92,8 @@ def get_match_link(team):
 
 def get_match_data(team):
 
-    # request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
-    request=requests.get("https://www.bbc.co.uk/sport/football/59646904")
+    request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
+    # request=requests.get("https://www.bbc.co.uk/sport/football/59646904")
 
     soup=BeautifulSoup(request.content, "html.parser")
 
