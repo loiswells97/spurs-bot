@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+import time
 
 # def generate_event_alert(match_url, previous_state):
 #
@@ -28,6 +29,21 @@ import requests
 #
 #     return new_state
 
+def generate_event_alert(team):
+    latest_match_state=get_match_data(team)
+    while latest_match_state["status"]!="FT":
+        current_match_state=get_match_data(team)
+
+        if current_match_state!=latest_match_state:
+            print("SOMETHING'S HAPPENED!!!!!!!")
+            latest_match_state=current_match_state
+        else:
+            print("Nothing's happened.")
+        time.sleep(60)
+    print("The game is over.")
+
+
+
 def get_match_link(team):
     team=team.lower()
     team_slug=team.replace(" ", "-")
@@ -41,8 +57,8 @@ def get_match_link(team):
 
 def get_match_data(team):
 
-    request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
-    # request=requests.get("https://www.bbc.co.uk/sport/football/59646904")
+    # request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
+    request=requests.get("https://www.bbc.co.uk/sport/football/59646904")
 
     soup=BeautifulSoup(request.content, "html.parser")
 
@@ -72,8 +88,6 @@ def get_match_data(team):
         for i in [i for i in range(len(away_scorer_data)) if i%5==3]:
             time=away_scorer_data[i].string
             away_goals.append( {"scorer": name, "time": time} )
-
-
 
     try:
         match_status=summary_header.find("span", class_="sp-c-fixture__status").find("abbr").string
