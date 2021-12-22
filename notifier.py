@@ -45,8 +45,8 @@ def generate_team_match_alert(team):
         message=f"{string.capwords(team)} are playing {opposition} {home_or_away} today at {time_string} in the {competition}."
         text = client.messages.create(
             body = message,
-            from_ = "+18506053624",
-            to = "+447854324768"
+            from_ = config.twilio_from_number,
+            to = config.twilio_to_number
         )
     else:
         print(f"{string.capwords(team)} are not playing today.")
