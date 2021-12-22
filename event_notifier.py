@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import re
 import requests
 
 # def generate_event_alert(match_url, previous_state):
@@ -50,9 +51,33 @@ def get_match_data(team):
     teams=summary_header.find_all("span", class_="qa-full-team-name")
     home_team=teams[0].string
     away_team=teams[1].string
+    scores=summary_header.find_all("span", class_="sp-c-fixture__number")
+    home_score=scores[0].string
+    away_score=scores[1].string
+
+    scorer_data=summary_header.find_all("ul", class_="sp-c-fixture__scorers")
+    home_goals=[]
+    away_goals=[]
+
+    for home_scorer in scorer_data[0].find_all("li"):
+        home_scorer_data=home_scorer.find_all("span")
+        name=home_scorer_data[0].string
+        for i in [i for i in range(len(home_scorer_data)) if i%5==3]:
+            time=home_scorer_data[i].string
+            home_goals.append( {"scorer": name, "time": time} )
+
+    for away_scorer in scorer_data[1].find_all("li"):
+        away_scorer_data=away_scorer.find_all("span")
+        name=away_scorer_data[0].string
+        for i in [i for i in range(len(away_scorer_data)) if i%5==3]:
+            time=away_scorer_data[i].string
+            away_goals.append( {"scorer": name, "time": time} )
+
+
+
     try:
         match_status=summary_header.find("span", class_="sp-c-fixture__status").find("abbr").string
     except Exception:
         match_status="In Progress"
 
-    return {"home": {"team": home_team}, "away": {"team":away_team}, "status": match_status}
+    return {"home": {"team": home_team, "score": home_score, "goals": home_goals}, "away": {"team":away_team, "score": away_score, "goals": away_goals}, "status": match_status}
