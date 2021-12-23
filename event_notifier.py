@@ -35,8 +35,8 @@ client = Client(config.account_sid, config.auth_token)
 #     return new_state
 
 def generate_event_alerts(team):
-    # latest_match_state=get_match_data(team)
-    latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": []}, "away": {"team": "West Ham United", "score": 0, "goals": []}, "status": "In Progress"}
+    latest_match_state=get_match_data(team)
+    # latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": []}, "away": {"team": "West Ham United", "score": 0, "goals": []}, "status": "In Progress"}
 
     home_team=latest_match_state["home"]["team"]
     home_score=latest_match_state["home"]["score"]
