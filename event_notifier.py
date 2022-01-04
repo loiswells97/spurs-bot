@@ -10,6 +10,9 @@ client = Client(config.account_sid, config.auth_token)
 
 def generate_event_alerts(team):
     latest_match_state=get_match_data(team)
+    while latest_match_state["status"]=="Upcoming":
+        sleep(10)
+        latest_match_state=get_match_data(team)
     # latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": [], "red_cards": []}, "away": {"team": "Liverpool", "score": 0, "goals": [], "red_cards": []}, "status": "In Progress"}
 
     home_team=latest_match_state["home"]["team"]
@@ -113,9 +116,14 @@ def get_match_data(team):
     teams=summary_header.find_all("span", class_="qa-full-team-name")
     home_team=teams[0].string
     away_team=teams[1].string
-    scores=summary_header.find_all("span", class_="sp-c-fixture__number")
-    home_score=scores[0].string
-    away_score=scores[1].string
+    try:
+        scores=summary_header.find_all("span", class_="sp-c-fixture__number")
+        home_score=int(scores[0].string)
+        away_score=int(scores[1].string)
+    except Exception:
+        match_status = "Not started"
+        return {"home": {"team": home_team}, "away": {"team":away_team}, "status": match_status}
+
 
     scorer_data=summary_header.find_all("ul", class_="sp-c-fixture__scorers")
     home_goals=[]
