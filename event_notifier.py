@@ -115,7 +115,13 @@ def get_match_data(team):
         name=home_scorer_data[0].string
         for i in [i for i in range(len(home_scorer_data)) if i%5==3]:
             time=home_scorer_data[i].string
-            home_goals.append( {"scorer": name, "time": time} )
+            goal={"scorer": name, "time": time}
+            try:
+                minute=get_minute(goal)
+                home_goals.append(goal)
+            except Exception:
+                continue
+            # home_goals.append( {"scorer": name, "time": time} )
     home_goals.sort(key=get_minute)
 
     for away_scorer in scorer_data[1].find_all("li"):
@@ -123,7 +129,14 @@ def get_match_data(team):
         name=away_scorer_data[0].string
         for i in [i for i in range(len(away_scorer_data)) if i%5==3]:
             time=away_scorer_data[i].string
-            away_goals.append( {"scorer": name, "time": time} )
+            goal={"scorer": name, "time": time}
+            try:
+                minute=get_minute(goal)
+                away_goals.append( goal )
+            except Exception:
+                continue
+
+            # away_goals.append( {"scorer": name, "time": time} )
     away_goals.sort(key=get_minute)
 
     try:
