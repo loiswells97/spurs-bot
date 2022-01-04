@@ -77,6 +77,11 @@ def get_kick_off_time(team):
 
     if not is_today:
         return
-    else
+    else:
+        next_match=soup.find("div", class_="qa-match-block")
         time_string=next_match.find("span", class_="sp-c-fixture__number--time").string
-        return time_string
+        kick_off_hour=int(time_string.split(":")[0])
+        kick_off_minute=int(time_string.split(":")[1])
+        today=datetime.now()
+
+        return datetime(today.year, today.month, today.day, kick_off_hour, kick_off_minute, 0)
