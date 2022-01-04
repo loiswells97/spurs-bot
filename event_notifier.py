@@ -95,10 +95,20 @@ def generate_event_alerts(team):
                     )
                     # print(message)
 
+        # Half time
+        if current_match_state["status"]!=latest_match_state["status"] and current_match_state["status"]=="HT":
+            message=f"HALF TIME: {home_team} {home_score}-{away_score} {away_team}"
+            text = client.messages.create(
+                body = message,
+                from_ = config.twilio_from_number,
+                to = config.twilio_to_number
+            )
+            sleep(15*60)
+
         latest_match_state=current_match_state
         time.sleep(60)
 
-    message=f"The full time score is {home_team} {home_score}-{away_score} {away_team}."
+    message=f"FULL TIME: {home_team} {home_score}-{away_score} {away_team}"
     text = client.messages.create(
         body = message,
         from_ = config.twilio_from_number,
