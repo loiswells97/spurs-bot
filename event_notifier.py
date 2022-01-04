@@ -35,8 +35,8 @@ client = Client(config.account_sid, config.auth_token)
 #     return new_state
 
 def generate_event_alerts(team):
-    latest_match_state=get_match_data(team)
-    # latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": []}, "away": {"team": "West Ham United", "score": 0, "goals": []}, "status": "In Progress"}
+    # latest_match_state=get_match_data(team)
+    latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": [], "red_cards": []}, "away": {"team": "Liverpool", "score": 0, "goals": [], "red_cards": []}, "status": "In Progress"}
 
     home_team=latest_match_state["home"]["team"]
     home_score=latest_match_state["home"]["score"]
@@ -57,7 +57,7 @@ def generate_event_alerts(team):
                         from_ = config.twilio_from_number,
                         to = config.twilio_to_number
                     )
-
+                    # print(message)
 
         # Away team has scored
         if current_match_state["away"]["goals"]!=latest_match_state["away"]["goals"]:
@@ -69,6 +69,32 @@ def generate_event_alerts(team):
                         from_ = config.twilio_from_number,
                         to = config.twilio_to_number
                     )
+                    # print(message)
+        # Home player sent off
+        if current_match_state["home"]["red_cards"]!=latest_match_state["home"]["red_cards"]:
+            print(length(current_match_state["home"]["red_cards"]))
+            for red_card in current_match_state["home"]["red_cards"]:
+                if red_card not in latest_match_state["home"]["red_cards"]:
+                    message=f"{red_card['player'].upper()} HAS BEEN SENT OFF FOR {home_team.upper()} FOR A {red_card['type']} CARD ({goal['time']})! {home_team} are down to {11-len(current_match_state['home']['red_cards'])} men with the scores at {home_team} {home_score}-{away_score} {away_team}."
+                    text = client.messages.create(
+                        body = message,
+                        from_ = config.twilio_from_number,
+                        to = config.twilio_to_number
+                    )
+                    # print(message)
+
+        # Away player sent off
+        if current_match_state["away"]["red_cards"]!=latest_match_state["away"]["red_cards"]:
+            for red_card in current_match_state["away"]["red_cards"]:
+                if red_card not in latest_match_state["away"]["red_cards"]:
+                    message=f"{red_card['player'].upper()} HAS BEEN SENT OFF FOR {away_team.upper()} FOR A {red_card['type'].upper()} CARD ({goal['time']})! {away_team} are down to {11-len(current_match_state['away']['red_cards'])} men with the scores at {home_team} {home_score}-{away_score} {away_team}."
+                    text = client.messages.create(
+                        body = message,
+                        from_ = config.twilio_from_number,
+                        to = config.twilio_to_number
+                    )
+                    # print(message)
+
         latest_match_state=current_match_state
         time.sleep(60)
 
@@ -78,6 +104,7 @@ def generate_event_alerts(team):
         from_ = config.twilio_from_number,
         to = config.twilio_to_number
     )
+    # print(message)
 
 def get_match_link(team):
     team=team.lower()
@@ -93,7 +120,7 @@ def get_match_link(team):
 def get_match_data(team):
 
     # request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
-    request=requests.get("https://www.bbc.co.uk/sport/football/59736885")
+    request=requests.get("https://www.bbc.co.uk/sport/football/59625603")
 
     soup=BeautifulSoup(request.content, "html.parser")
 
