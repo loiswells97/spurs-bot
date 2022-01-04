@@ -92,8 +92,8 @@ def get_match_link(team):
 
 def get_match_data(team):
 
-    request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
-    # request=requests.get("https://www.bbc.co.uk/sport/football/59646904")
+    # request=requests.get(f"https://www.bbc.co.uk/{get_match_link(team)}")
+    request=requests.get("https://www.bbc.co.uk/sport/football/59736885")
 
     soup=BeautifulSoup(request.content, "html.parser")
 
@@ -108,19 +108,28 @@ def get_match_data(team):
 
     scorer_data=summary_header.find_all("ul", class_="sp-c-fixture__scorers")
     home_goals=[]
+    home_red_cards=[]
     away_goals=[]
+    away_red_cards=[]
 
     for home_scorer in scorer_data[0].find_all("li"):
         home_scorer_data=home_scorer.find_all("span")
         name=home_scorer_data[0].string
         for i in [i for i in range(len(home_scorer_data)) if i%5==3]:
-            time=home_scorer_data[i].string
-            goal={"scorer": name, "time": time}
             try:
+                time=home_scorer_data[i].string
+                goal={"scorer": name, "time": time}
                 minute=get_minute(goal)
                 home_goals.append(goal)
             except Exception:
-                continue
+                if home_scorer.find("i", class_="sp-c-booking-card--yellow-red") is not None:
+                    type = "second yellow"
+                else:
+                    type = "straight red"
+                time = home_scorer_data[i+1].string
+                red_card = {"player": name, "time": time, "type": type}
+                home_red_cards.append(red_card)
+
             # home_goals.append( {"scorer": name, "time": time} )
     home_goals.sort(key=get_minute)
 
@@ -128,13 +137,19 @@ def get_match_data(team):
         away_scorer_data=away_scorer.find_all("span")
         name=away_scorer_data[0].string
         for i in [i for i in range(len(away_scorer_data)) if i%5==3]:
-            time=away_scorer_data[i].string
-            goal={"scorer": name, "time": time}
             try:
+                time=away_scorer_data[i].string
+                goal={"scorer": name, "time": time}
                 minute=get_minute(goal)
                 away_goals.append( goal )
             except Exception:
-                continue
+                if away_scorer.find("i", class_="sp-c-booking-card--yellow-red") is not None:
+                    type = "second yellow"
+                else:
+                    type = "straight red"
+                time = away_scorer_data[i+1].string
+                red_card = {"player": name, "time": time, "type": type}
+                away_red_cards.append(red_card)
 
             # away_goals.append( {"scorer": name, "time": time} )
     away_goals.sort(key=get_minute)
@@ -144,7 +159,7 @@ def get_match_data(team):
     except Exception:
         match_status="In Progress"
 
-    return {"home": {"team": home_team, "score": home_score, "goals": home_goals}, "away": {"team":away_team, "score": away_score, "goals": away_goals}, "status": match_status}
+    return {"home": {"team": home_team, "score": home_score, "goals": home_goals, "red_cards": home_red_cards}, "away": {"team":away_team, "score": away_score, "goals": away_goals, "red_cards": away_red_cards}, "status": match_status}
 
 def get_minute(goal):
     time=goal["time"]
