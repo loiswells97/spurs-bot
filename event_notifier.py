@@ -8,32 +8,6 @@ import config
 
 client = Client(config.account_sid, config.auth_token)
 
-# def generate_event_alert(match_url, previous_state):
-#
-#     home_team="Tottenham"
-#     away_team="Arsenal"
-#
-#
-#     if new_state["home_red_cards"]>previous_state["home_red_cards"]:
-#         print(f"{home_team} have had {player_name} sent off!")
-#
-#     if new_state["away_red_cards"]>previous_state["away_red_cards"]:
-#         print(f"{away_team} have had {player_name} sent off!")
-#
-#     if new_state["home_goals"]>previous_state["home_goals"]:
-#         for goal in range(new_state["home_goals"]-previous_state["home_goals"])
-#             print(f"{home_team.upper} HAVE SCORED! The goal was scored by {player} in the {minute}{ending} minute! The score is  now {home_team} {home_goals}:{away_goals} {away_team}.")
-#
-#     if new_state["away_goals"]>previous_state["away_goals"]:
-#         print(f"{home_team.upper} HAVE SCORED! The goal was scored by {player} in the {minute}{ending} minute! The score is  now {home_team} {home_goals}:{away_goals} {away_team}.")
-#
-#
-#
-#     # new_state={'status': 'Upcoming/1st half/HT/2nd half/ET/Penalties/FT', 'home_score': 0, 'away_score': 0, 'home_red_cards': 0, 'away_red_cards': 0}
-#     # if
-#
-#     return new_state
-
 def generate_event_alerts(team):
     latest_match_state=get_match_data(team)
     # latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": [], "red_cards": []}, "away": {"team": "Liverpool", "score": 0, "goals": [], "red_cards": []}, "status": "In Progress"}
@@ -106,7 +80,7 @@ def generate_event_alerts(team):
             sleep(15*60)
 
         latest_match_state=current_match_state
-        time.sleep(60)
+        time.sleep(10)
 
     message=f"FULL TIME: {home_team} {home_score}-{away_score} {away_team}"
     text = client.messages.create(
