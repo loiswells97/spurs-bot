@@ -1,0 +1,5 @@
+beautifulsoup4==4.10.0
+requests==2.27.1
+textblob==0.17.1
+tweepy==4.4.0
+twilio==7.5.0
