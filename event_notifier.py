@@ -4,6 +4,7 @@ import requests
 import time
 from twilio.rest import Client
 
+from app import time_to_unmute
 import config
 import sentiment_analyser
 
@@ -20,7 +21,7 @@ def generate_event_alerts(team):
     home_score=latest_match_state["home"]["score"]
     away_team=latest_match_state["away"]["team"]
     away_score=latest_match_state["away"]["score"]
-    while latest_match_state["status"]!="FT":
+    while latest_match_state["status"]!="FT" and time_to_unmute<=datetime.now():
         current_match_state=get_match_data(team)
         home_score=current_match_state["home"]["score"]
         away_score=current_match_state["away"]["score"]
@@ -87,11 +88,12 @@ def generate_event_alerts(team):
         time.sleep(10)
 
     message=f"FULL TIME: {home_team} {home_score}-{away_score} {away_team} {sentiment_analyser.get_sentiment()}"
-    text = client.messages.create(
-        body = message,
-        from_ = config.twilio_from_number,
-        to = config.twilio_to_number
-    )
+    if time_to_unmute<=datetime.now():
+        text = client.messages.create(
+            body = message,
+            from_ = config.twilio_from_number,
+            to = config.twilio_to_number
+        )
     # print(message)
 
 def get_match_link(team):

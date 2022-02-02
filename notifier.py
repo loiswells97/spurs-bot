@@ -5,6 +5,7 @@ import string
 import time
 from twilio.rest import Client
 
+from app import time_to_unmute
 import config
 
 client = Client(config.account_sid, config.auth_token)
@@ -42,11 +43,12 @@ def generate_team_match_alert(team):
             opposition=teams[0].string
 
         message=f"{string.capwords(team)} are playing {opposition} {home_or_away} today at {time_string} in the {competition}."
-        text = client.messages.create(
-            body = message,
-            from_ = config.twilio_from_number,
-            to = config.twilio_to_number
-        )
+        if time_to_unmute<=datetime.now():
+            text = client.messages.create(
+                body = message,
+                from_ = config.twilio_from_number,
+                to = config.twilio_to_number
+            )
     else:
         print(f"{string.capwords(team)} are not playing today.")
 

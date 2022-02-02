@@ -21,10 +21,10 @@ def reply():
     repsonse = MessagingResponse()
     now = datetime.datetime.now()
 
-    if body.upper == "MUTE":
+    if body.upper() == "MUTE":
         time_to_unmute = datetime.datetime(now.year, now.month, now.day, 0, 0, 0) + datetime.timedelta(days=1)
         response.message("Notifications muted until tomorrow")
-    elif body.upper == "UNMUTE":
+    elif body.upper() == "UNMUTE":
         time_to_unmute = now
         response.message("Notifications unmuted")
     else:
