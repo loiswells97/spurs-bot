@@ -9,9 +9,10 @@ emojis = ["😩", "😭", "😢", "😟", "😊", "😃", "🎉", "😱"]
 
 def get_sentiment():
 
-    start_time = datetime.datetime.now()-datetime.timedelta(minutes=2)
+    # start_time = datetime.datetime.now()-datetime.timedelta(minutes=2)
+    start_time = datetime.datetime.now()-datetime.timedelta(seconds=30)
 
-    tweets = client.search_recent_tweets(query="#THFC", max_results=100, start_time=start_time)[0]
+    tweets = client.search_recent_tweets(query="#COYS", max_results=100, start_time=start_time)[0]
 
     polarity = 0
 
