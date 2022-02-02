@@ -5,8 +5,10 @@ import threading
 import config
 import event_notifier
 import notifier
+from global_vars import time_to_unmute
 
 def spurs_bot():
+    global time_to_unmute
     print("Starting Spurs bot...")
     print(threading.current_thread().name)
     while True:

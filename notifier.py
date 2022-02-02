@@ -5,10 +5,11 @@ import string
 import time
 from twilio.rest import Client
 
-from app import time_to_unmute
+# from global_vars import time_to_unmute
 import config
 
 client = Client(config.account_sid, config.auth_token)
+# global time_to_unmutes
 
 def generate_match_alert():
     for team in config.teams:

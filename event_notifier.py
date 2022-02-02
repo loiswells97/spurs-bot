@@ -4,8 +4,8 @@ import requests
 import time
 from twilio.rest import Client
 
-from app import time_to_unmute
 import config
+# from global_vars import time_to_unmute
 import sentiment_analyser
 
 client = Client(config.account_sid, config.auth_token)
