@@ -15,12 +15,22 @@ threading.Thread(target = spurs_bot).start()
 def hello():
   return "Hello World!"
 
-@app.route("/sms")
+@app.route("/sms", methods=['POST'])
 def reply():
+    body = request.values.get('Body', None)
     repsonse = MessagingResponse()
     now = datetime.datetime.now()
-    time_to_unmute = datetime.datetime(now.year, now.month, now.day, 0, 0, 0) + datetime.timedelta(days=1)
-    response.message("Notifications muted until tomorrow")
+
+    if body.upper == "MUTE":
+        time_to_unmute = datetime.datetime(now.year, now.month, now.day, 0, 0, 0) + datetime.timedelta(days=1)
+        response.message("Notifications muted until tomorrow")
+    elif body.upper == "UNMUTE":
+        time_to_unmute = now
+        response.message("Notifications unmuted")
+    else:
+        response.message("Reply with 'MUTE' to mute notifications until tomorrow or 'UNMUTE' to unmute notifications")
+
+    return str(response)
 
 if __name__ == "__main__":
   app.run()
