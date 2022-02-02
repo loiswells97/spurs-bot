@@ -10,7 +10,7 @@ while True:
         notifier.generate_team_match_alert(team)
         if notifier.is_playing_today(team):
             kick_off_time=notifier.get_kick_off_time(team)
-            print(f"Sleeping for {(kick_off_time-datetime.datetime.now()).seconds} seconds until the game...")
+            print("Sleeping until the game...")
             time.sleep((kick_off_time-datetime.datetime.now()).seconds)
             event_notifier.generate_event_alerts(team)
 

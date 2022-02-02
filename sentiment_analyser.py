@@ -23,8 +23,6 @@ def get_sentiment():
     else:
         mean_polarity=0
 
-    print(mean_polarity)
-
     return emojis[math.floor(4+4*mean_polarity)]
 
 def get_text_sentiment(text):
