@@ -5,6 +5,7 @@ import time
 from twilio.rest import Client
 
 import config
+import sentiment_analyser
 
 client = Client(config.account_sid, config.auth_token)
 
@@ -28,7 +29,7 @@ def generate_event_alerts(team):
         if current_match_state["home"]["goals"]!=latest_match_state["home"]["goals"]:
             for goal in current_match_state["home"]["goals"]:
                 if goal not in latest_match_state["home"]["goals"]:
-                    message=f"{goal['scorer'].upper()} HAS SCORED FOR {home_team.upper()} ({goal['time']})! The score is now {home_team} {home_score}-{away_score} {away_team}."
+                    message=f"{goal['scorer'].upper()} HAS SCORED FOR {home_team.upper()} ({goal['time']})! {sentiment_analyser.get_sentiment()} The score is now {home_team} {home_score}-{away_score} {away_team}."
                     text = client.messages.create(
                         body = message,
                         from_ = config.twilio_from_number,
@@ -40,7 +41,7 @@ def generate_event_alerts(team):
         if current_match_state["away"]["goals"]!=latest_match_state["away"]["goals"]:
             for goal in current_match_state["away"]["goals"]:
                 if goal not in latest_match_state["away"]["goals"]:
-                    message=f"{goal['scorer'].upper()} HAS SCORED FOR {away_team.upper()} ({goal['time']})! The score is now {home_team} {home_score}-{away_score} {away_team}."
+                    message=f"{goal['scorer'].upper()} HAS SCORED FOR {away_team.upper()} ({goal['time']})! {sentiment_analyser.get_sentiment()} The score is now {home_team} {home_score}-{away_score} {away_team}."
                     text = client.messages.create(
                         body = message,
                         from_ = config.twilio_from_number,
@@ -52,7 +53,7 @@ def generate_event_alerts(team):
             print(length(current_match_state["home"]["red_cards"]))
             for red_card in current_match_state["home"]["red_cards"]:
                 if red_card not in latest_match_state["home"]["red_cards"]:
-                    message=f"{red_card['player'].upper()} HAS BEEN SENT OFF FOR {home_team.upper()} FOR A {red_card['type']} CARD ({goal['time']})! {home_team} are down to {11-len(current_match_state['home']['red_cards'])} men with the scores at {home_team} {home_score}-{away_score} {away_team}."
+                    message=f"{red_card['player'].upper()} HAS BEEN SENT OFF FOR {home_team.upper()} FOR A {red_card['type']} CARD ({goal['time']})! {sentiment_analyser.get_sentiment()} {home_team} are down to {11-len(current_match_state['home']['red_cards'])} men with the scores at {home_team} {home_score}-{away_score} {away_team}."
                     text = client.messages.create(
                         body = message,
                         from_ = config.twilio_from_number,
@@ -64,7 +65,7 @@ def generate_event_alerts(team):
         if current_match_state["away"]["red_cards"]!=latest_match_state["away"]["red_cards"]:
             for red_card in current_match_state["away"]["red_cards"]:
                 if red_card not in latest_match_state["away"]["red_cards"]:
-                    message=f"{red_card['player'].upper()} HAS BEEN SENT OFF FOR {away_team.upper()} FOR A {red_card['type'].upper()} CARD ({goal['time']})! {away_team} are down to {11-len(current_match_state['away']['red_cards'])} men with the scores at {home_team} {home_score}-{away_score} {away_team}."
+                    message=f"{red_card['player'].upper()} HAS BEEN SENT OFF FOR {away_team.upper()} FOR A {red_card['type'].upper()} CARD ({goal['time']})! {sentiment_analyser.get_sentiment()} {away_team} are down to {11-len(current_match_state['away']['red_cards'])} men with the scores at {home_team} {home_score}-{away_score} {away_team}."
                     text = client.messages.create(
                         body = message,
                         from_ = config.twilio_from_number,
@@ -74,7 +75,7 @@ def generate_event_alerts(team):
 
         # Half time
         if current_match_state["status"]!=latest_match_state["status"] and current_match_state["status"]=="HT":
-            message=f"HALF TIME: {home_team} {home_score}-{away_score} {away_team}"
+            message=f"HALF TIME: {home_team} {home_score}-{away_score} {away_team} {sentiment_analyser.get_sentiment()}"
             text = client.messages.create(
                 body = message,
                 from_ = config.twilio_from_number,
@@ -85,7 +86,7 @@ def generate_event_alerts(team):
         latest_match_state=current_match_state
         time.sleep(10)
 
-    message=f"FULL TIME: {home_team} {home_score}-{away_score} {away_team}"
+    message=f"FULL TIME: {home_team} {home_score}-{away_score} {away_team} {sentiment_analyser.get_sentiment()}"
     text = client.messages.create(
         body = message,
         from_ = config.twilio_from_number,
