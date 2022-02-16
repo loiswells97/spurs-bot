@@ -13,7 +13,7 @@ client = Client(config.account_sid, config.auth_token)
 def generate_event_alerts(team):
     latest_match_state=get_match_data(team)
     while latest_match_state["status"]=="Upcoming":
-        sleep(10)
+        time.sleep(10)
         latest_match_state=get_match_data(team)
     # latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": [], "red_cards": []}, "away": {"team": "Liverpool", "score": 0, "goals": [], "red_cards": []}, "status": "In Progress"}
 
@@ -82,7 +82,7 @@ def generate_event_alerts(team):
                 from_ = config.twilio_from_number,
                 to = config.twilio_to_number
             )
-            sleep(15*60)
+            time.sleep(15*60)
 
         latest_match_state=current_match_state
         time.sleep(10)
