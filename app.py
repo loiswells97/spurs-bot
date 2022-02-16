@@ -4,6 +4,7 @@ import threading
 from twilio.twiml.messaging_response import MessagingResponse
 
 from global_vars import time_to_unmute
+from ngrok_tunnels import update_ngrok_urls
 from spurs_bot import spurs_bot
 
 app = Flask(__name__)
@@ -37,8 +38,11 @@ def reply():
 
 if __name__ == "__main__":
     global time_to_unmute
-    print("Running Flask app...")
-    print(threading.current_thread().name)
+
+    print("Starting Spurs Bot...")
     threading.Thread(target = spurs_bot).start()
+    print("Enabling muting...")
+    threading.Thread(target = update_ngrok_urls).start()
+    print("Running Flask app...")
     app.run()
     # threading.Thread(target = flask_app).start()
