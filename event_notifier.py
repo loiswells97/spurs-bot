@@ -5,6 +5,7 @@ import time
 from twilio.rest import Client
 
 import config
+# from global_vars import time_to_unmute
 import sentiment_analyser
 
 client = Client(config.account_sid, config.auth_token)
@@ -12,7 +13,7 @@ client = Client(config.account_sid, config.auth_token)
 def generate_event_alerts(team):
     latest_match_state=get_match_data(team)
     while latest_match_state["status"]=="Upcoming":
-        sleep(10)
+        time.sleep(10)
         latest_match_state=get_match_data(team)
     # latest_match_state={"home": {"team": "Tottenham Hotspur", "score": 0, "goals": [], "red_cards": []}, "away": {"team": "Liverpool", "score": 0, "goals": [], "red_cards": []}, "status": "In Progress"}
 
@@ -20,7 +21,7 @@ def generate_event_alerts(team):
     home_score=latest_match_state["home"]["score"]
     away_team=latest_match_state["away"]["team"]
     away_score=latest_match_state["away"]["score"]
-    while latest_match_state["status"]!="FT":
+    while latest_match_state["status"]!="FT" and time_to_unmute<=datetime.now():
         current_match_state=get_match_data(team)
         home_score=current_match_state["home"]["score"]
         away_score=current_match_state["away"]["score"]
@@ -81,17 +82,18 @@ def generate_event_alerts(team):
                 from_ = config.twilio_from_number,
                 to = config.twilio_to_number
             )
-            sleep(15*60)
+            time.sleep(15*60)
 
         latest_match_state=current_match_state
         time.sleep(10)
 
     message=f"FULL TIME: {home_team} {home_score}-{away_score} {away_team} {sentiment_analyser.get_sentiment()}"
-    text = client.messages.create(
-        body = message,
-        from_ = config.twilio_from_number,
-        to = config.twilio_to_number
-    )
+    if time_to_unmute<=datetime.now():
+        text = client.messages.create(
+            body = message,
+            from_ = config.twilio_from_number,
+            to = config.twilio_to_number
+        )
     # print(message)
 
 def get_match_link(team):
